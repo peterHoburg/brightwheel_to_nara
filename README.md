@@ -42,6 +42,9 @@ Edit `.env` with your credentials:
 BRIGHTWHEEL_USERNAME="your.email@example.com"
 BRIGHTWHEEL_PASSWORD="your_password"
 
+# Optional: Brightwheel session cookie (to skip interactive login)
+BRIGHTWHEEL_SESSION_COOKIE="your_session_cookie_value"
+
 # Optional: Nara credentials (if not provided, runs in read-only mode)
 NARA_EMAIL="your.email@example.com"
 NARA_PASSWORD="your_password"
@@ -74,6 +77,9 @@ btn --days-back 14
 
 # Set logging level
 btn --log-level DEBUG
+
+# Extract session cookie from browser (avoids captcha)
+btn --extract-cookie
 ```
 
 ## Supported Activity Types
@@ -89,10 +95,28 @@ The tool currently supports transferring the following activity types:
 
 ## How It Works
 
-1. **Authentication**: The tool uses Playwright to handle Brightwheel's login (including captcha challenges)
+1. **Authentication**: 
+   - First tries to use a session cookie if provided (bypasses captcha)
+   - Falls back to Playwright-based interactive login if needed
 2. **Data Fetching**: Retrieves activities from Brightwheel for the specified date range
 3. **Transformation**: Converts Brightwheel data format to Nara's format
 4. **Upload**: Creates corresponding activities in Nara Baby Tracker
+
+### Avoiding Captcha Challenges
+
+To avoid interactive login and captcha challenges:
+
+1. Use the cookie extraction feature:
+   ```bash
+   btn --extract-cookie
+   ```
+
+2. Or manually extract the session cookie:
+   - Login to Brightwheel in your browser
+   - Open Developer Tools (F12)
+   - Go to Application/Storage tab
+   - Find the `_brightwheel_session` cookie
+   - Copy the value to your `.env` file
 
 ## API Structure
 

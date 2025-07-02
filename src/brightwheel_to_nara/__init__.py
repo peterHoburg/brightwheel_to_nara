@@ -7,6 +7,7 @@ import argparse
 
 from .transfer import main as transfer_main
 from .config import get_settings
+from .utils.cookie_extractor import get_brightwheel_v2_cookie, print_cookie_instructions
 
 
 def setup_logging(level: str = "INFO"):
@@ -40,11 +41,27 @@ def main() -> None:
         default="INFO",
         help="Set logging level (default: INFO)"
     )
+    parser.add_argument(
+        "--extract-cookie",
+        action="store_true",
+        help="Attempt to extract session cookie from browser and show instructions"
+    )
     
     args = parser.parse_args()
     
     # Setup logging
     setup_logging(args.log_level)
+    
+    # Handle cookie extraction
+    if args.extract_cookie:
+        cookie = get_brightwheel_v2_cookie()
+        if cookie:
+            print(f"Found session cookie: {cookie[:20]}...")
+            print(f"Add this to your .env file:")
+            print(f'BRIGHTWHEEL_SESSION_COOKIE="{cookie}"')
+        else:
+            print_cookie_instructions()
+        return
     
     # Override settings from command line
     settings = get_settings()

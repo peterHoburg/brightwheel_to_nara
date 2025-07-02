@@ -43,11 +43,30 @@ class DataTransfer:
     async def authenticate(self):
         """Authenticate with both platforms."""
         logger.info("Authenticating with Brightwheel...")
-        await self.brightwheel_client.login(
-            self.settings.brightwheel_username,
-            self.settings.brightwheel_password
-        )
-        logger.info("Successfully authenticated with Brightwheel")
+        
+        # Try cookie-based auth first if available
+        if self.settings.brightwheel_session_cookie:
+            try:
+                logger.info("Attempting authentication with session cookie...")
+                await self.brightwheel_client.login_with_cookie(
+                    self.settings.brightwheel_session_cookie
+                )
+                logger.info("Successfully authenticated with Brightwheel using session cookie")
+            except ValueError as e:
+                logger.warning(f"Cookie authentication failed: {e}")
+                logger.info("Falling back to interactive login...")
+                await self.brightwheel_client.login(
+                    self.settings.brightwheel_username,
+                    self.settings.brightwheel_password
+                )
+                logger.info("Successfully authenticated with Brightwheel using interactive login")
+        else:
+            # Use interactive login
+            await self.brightwheel_client.login(
+                self.settings.brightwheel_username,
+                self.settings.brightwheel_password
+            )
+            logger.info("Successfully authenticated with Brightwheel using interactive login")
         
         if self.settings.nara_email and self.settings.nara_password:
             logger.info("Authenticating with Nara...")

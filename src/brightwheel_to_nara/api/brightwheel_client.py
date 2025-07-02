@@ -39,6 +39,42 @@ class BrightwheelClient:
         if self.http_client:
             await self.http_client.aclose()
             
+    async def login_with_cookie(self, session_cookie: str) -> Session:
+        """
+        Login to Brightwheel using a session cookie.
+        
+        Args:
+            session_cookie: The _brightwheel_v2 cookie value
+            
+        Returns:
+            Session object with auth tokens
+        """
+        # Set the cookie in the HTTP client
+        self.http_client.cookies.set('_brightwheel_v2', session_cookie, domain='.mybrightwheel.com')
+        
+        # Verify the session is valid by making a test request
+        try:
+            response = await self.http_client.get(f"{self.API_BASE}/me")
+            response.raise_for_status()
+            
+            user_data = response.json()
+            user_id = user_data.get('id', '')
+            
+            # Create session object
+            self.session = Session(
+                token=session_cookie,
+                cookies={'_brightwheel_v2': session_cookie},
+                expires_at=datetime.utcnow() + timedelta(hours=24),
+                user_id=user_id
+            )
+            
+            return self.session
+            
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401:
+                raise ValueError("Invalid session cookie. Please login again.")
+            raise
+    
     async def login(self, username: str, password: str) -> Session:
         """
         Login to Brightwheel using Playwright to handle captcha.
@@ -96,7 +132,7 @@ class BrightwheelClient:
                     
                 if not session_token:
                     # Look for session cookie
-                    session_token = cookie_dict.get('_brightwheel_session', '')
+                    session_token = cookie_dict.get('_brightwheel_v2', '')
                 
                 # Create session object
                 self.session = Session(

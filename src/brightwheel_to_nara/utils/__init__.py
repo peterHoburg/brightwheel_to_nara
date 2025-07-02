@@ -22,6 +22,12 @@ from .errors import (
     retry_with_backoff,
     ErrorLogger
 )
+from .cookie_extractor import (
+    get_brightwheel_v2_cookie,
+    print_cookie_instructions,
+    extract_chrome_cookies,
+    extract_firefox_cookies
+)
 
 __all__ = [
     # Transformers
@@ -44,5 +50,10 @@ __all__ = [
     "TransferError",
     "handle_http_errors",
     "retry_with_backoff",
-    "ErrorLogger"
+    "ErrorLogger",
+    # Cookie extraction
+    "get_brightwheel_v2_cookie",
+    "print_cookie_instructions",
+    "extract_chrome_cookies",
+    "extract_firefox_cookies"
 ]

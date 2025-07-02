@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # Brightwheel credentials
     brightwheel_username: str = Field(..., env="BRIGHTWHEEL_USERNAME")
     brightwheel_password: str = Field(..., env="BRIGHTWHEEL_PASSWORD")
+    brightwheel_session_cookie: Optional[str] = Field(None, env="BRIGHTWHEEL_SESSION_COOKIE")
     
     # Nara credentials
     nara_email: Optional[str] = Field(None, env="NARA_EMAIL")
