@@ -1,0 +1,27 @@
+[project]
+name = "brightwheel-to-nara"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Peter Hoburg", email = "peterHoburg@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+]
+
+[project.scripts]
+btn = "brightwheel_to_nara:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.402",
+    "pytest>=8.4.1",
+    "ruff>=0.12.1",
+]
